@@ -2,15 +2,19 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import { Feather as Icon } from '@expo/vector-icons';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import MapView from 'react-native-maps';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import { SvgUri } from 'react-native-svg';
 
 const Points = () => {
     const navigation = useNavigation();
 
     function handleNavigationToHome() {
-        navigation.navigate('Home');
+      navigation.goBack();
+    }
+
+    function handleNavigateToDetail() {
+      navigation.navigate('Detail');
     }
 
     return (
@@ -24,13 +28,38 @@ const Points = () => {
 
             
             <View style={styles.mapContainer}>
-                <MapView style={styles.map} />
+                <MapView 
+                  style={styles.map} 
+                  initialRegion={{
+                    latitude: -23.5421559,
+                    longitude: -46.6204115,
+                    latitudeDelta: 0.014,
+                    longitudeDelta: 0.014,
+                  }}
+                >
+
+                <Marker
+                  style={styles.mapMarker}
+                  onPress={handleNavigateToDetail}
+                  coordinate={{
+                    latitude: -23.5421559,
+                    longitude: -46.6204115
+                  }}
+                >
+                  <View style={styles.mapMarkerContainer}>
+                    <Image style={styles.mapMarkerImage} source={{ uri: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"}} />
+
+                    <Text style={styles.mapMarkerTitle}>Marcador</Text>
+                  </View>
+                </Marker>
+                </MapView>
+
             </View>
             <View style={styles.itemsContainer}>
                 <ScrollView 
                     horizontal 
                     showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{paddingHorizontal: 20}}
+                    //contentContainerStyle={{ paddingHorizontal: 20 }}
                 >
                     <TouchableOpacity style={styles.item} onPress={() => {}}>
                         <SvgUri width={42} height={42} uri="http://192.168.0.10:3333/uploads/lampadas.svg" />
