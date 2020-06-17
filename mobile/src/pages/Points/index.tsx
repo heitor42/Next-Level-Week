@@ -1,10 +1,10 @@
 import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
-import { Feather as Icon } from '@expo/vector-icons';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { SvgUri } from 'react-native-svg';
+import { Feather as Icon } from '@expo/vector-icons';
 
 const Points = () => {
     const navigation = useNavigation();
