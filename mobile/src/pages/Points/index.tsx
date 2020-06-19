@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location'
 import { SvgUri } from 'react-native-svg';
 import { Feather as Icon } from '@expo/vector-icons';
 
@@ -17,6 +18,28 @@ const Points = () => {
 
   const [items, setItems] = useState<Item[]>([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [initialPosition, setInitialPosition] = useState<[number, number]>([0, 0]);
+
+  useEffect(() =>{
+    async function loadPosition() {
+
+      const { status } = await Location.requestPermissionsAsync();
+
+      if (status !== 'granted') {
+        setInitialPosition([-23.5421559, -46.6204115])
+        Alert.alert('Ooooops...', 'Precisamos de sua permissão para obter a sua localização');
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync()
+
+      const { latitude, longitude } = location.coords;
+
+      setInitialPosition([latitude, longitude]);
+    }
+
+    loadPosition();
+  }, []);
 
   useEffect(() => {
     api.get('items').then(response => {
@@ -42,7 +65,6 @@ const Points = () => {
     } else {
         setSelectedItems([ ...selectedItems, id]);
     }
-
 }
 
   return (
@@ -56,11 +78,13 @@ const Points = () => {
 
 
       <View style={styles.mapContainer}>
-        <MapView
+        { initialPosition[0] !== 0 && (
+          <MapView
           style={styles.map}
+          //loadingEnabled={initialPosition[0] === 0}
           initialRegion={{
-            latitude: -23.5421559,
-            longitude: -46.6204115,
+            latitude: initialPosition[0],
+            longitude: initialPosition[1],
             latitudeDelta: 0.014,
             longitudeDelta: 0.014,
           }}
@@ -81,7 +105,7 @@ const Points = () => {
             </View>
           </Marker>
         </MapView>
-
+        ) }
       </View>
       <View style={styles.itemsContainer}>
         <ScrollView
