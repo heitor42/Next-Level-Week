@@ -13,9 +13,19 @@ interface Item {
   title: string;
   image_url: string;
 }
+
+interface PointsList {
+  id: number;
+  name: string;
+  img: string;
+  latitude: number;
+  longitude: number;
+}
+
 const Points = () => {
   const navigation = useNavigation();
 
+  const [points, setPoints] = useState<PointsList[]>([])
   const [items, setItems] = useState<Item[]>([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [initialPosition, setInitialPosition] = useState<[number, number]>([0, 0]);
@@ -47,12 +57,24 @@ const Points = () => {
     });
   }, []);
 
+  useEffect(() => {
+    api.get('points', {
+      params: {
+        city: "Campinas",
+        uf: "SP",
+        items: [1]
+      }
+    }).then(response => {
+      setPoints(response.data)
+    })
+  }, []);
+
   function handleNavigationToHome() {
     navigation.goBack();
   }
 
-  function handleNavigateToDetail() {
-    navigation.navigate('Detail');
+  function handleNavigateToDetail(id: number) {
+    navigation.navigate('Detail', { point_id: id });
   }
 
   function handleSelectItem(id: number) {
@@ -90,20 +112,23 @@ const Points = () => {
           }}
         >
 
-          <Marker
+          {points.map(point => (
+            <Marker
+            key={point.id}
             style={styles.mapMarker}
-            onPress={handleNavigateToDetail}
+            onPress={() =>{handleNavigateToDetail(point.id)}}
             coordinate={{
-              latitude: -23.5421559,
-              longitude: -46.6204115
+              latitude:  point.latitude,
+              longitude: point.longitude
             }}
           >
             <View style={styles.mapMarkerContainer}>
-              <Image style={styles.mapMarkerImage} source={{ uri: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60" }} />
+              <Image style={styles.mapMarkerImage} source={{ uri: point.img}} />
 
-              <Text style={styles.mapMarkerTitle}>Marcador</Text>
+              <Text style={styles.mapMarkerTitle}>{point.name}</Text>
             </View>
           </Marker>
+          ))}
         </MapView>
         ) }
       </View>
