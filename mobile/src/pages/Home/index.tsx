@@ -1,16 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Feather as Icon } from '@expo/vector-icons';
-import { StyleSheet, Text, View, Image, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, Image, ImageBackground, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 
 const Home = () => {
   const navigation = useNavigation();
+  const [uf, setUf] = useState('');
+  const [city, setCity] = useState('');
 
   function handleNavigationToPoints() {
-    navigation.navigate('Points');
+    navigation.navigate('Points', {
+      uf,
+      city
+    });
   }
     return (
+      <KeyboardAvoidingView style={{flex: 1}} behavior={Platform.OS === 'ios' ? "padding" : undefined}>
         <ImageBackground 
           source={require('../../assets/home-background.png')} 
           style={styles.container}
@@ -22,6 +28,23 @@ const Home = () => {
             <Text style={styles.description}>Ajudamos pessoas a encontrarem pontos de coleta de forma eficiente</Text>
           </View>
           <View style={styles.footer}>
+            <TextInput 
+              style={styles.input}
+              placeholder="Digite a uf"
+              value={uf}
+              maxLength={2}
+              autoCapitalize="characters"
+              autoCorrect={false}
+              onChangeText={text => setUf(text)}
+            />
+            <TextInput 
+              style={styles.input}
+              placeholder="Digite a cidade"
+              value={city}
+              autoCorrect={false}
+              onChangeText={setCity}
+            />
+
             <RectButton style={styles.button} onPress={handleNavigationToPoints}>
               <View style={styles.buttonIcon}>
                 <Text>
@@ -32,6 +55,7 @@ const Home = () => {
             </RectButton>
           </View>
         </ImageBackground>
+        </KeyboardAvoidingView>
     );
 };
 

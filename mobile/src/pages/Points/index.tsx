@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location'
@@ -22,8 +22,17 @@ interface PointsList {
   longitude: number;
 }
 
+interface Param {
+  uf: string;
+  city: string;
+}
+
 const Points = () => {
   const navigation = useNavigation();
+
+  const route = useRoute();
+
+  const routParam = route.params as Param;
 
   const [points, setPoints] = useState<PointsList[]>([])
   const [items, setItems] = useState<Item[]>([]);
@@ -60,14 +69,14 @@ const Points = () => {
   useEffect(() => {
     api.get('points', {
       params: {
-        city: "Campinas",
-        uf: "SP",
-        items: [1]
+        city: routParam.city,
+        uf: routParam.uf,
+        items: selectedItems
       }
     }).then(response => {
       setPoints(response.data)
     })
-  }, []);
+  }, [selectedItems]);
 
   function handleNavigationToHome() {
     navigation.goBack();
